@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	
+</head>
+<body>
+	<h1>数据库查询系统</h1>
+	<hr>
+	<h2>根据时间查询订单</h2>
+	<h4 style="color:red " >默认时间为过去一小时</h4>
+	<form action="/result_time" method='POST'>
+		{% csrf_token %}
+
+		请输入开始时间<input type="text" name="start_time" placeholder="XXXX/XX/XX XX:XX:XX" value="{{ startTime }}">
+		请输入结束时间<input type="text" name="end_time"placeholder="XXXX/XX/XX XX:XX:XX" value="{{ endTime }}">
+		<button>查询</button>
+		<h4 style="color: red">{{errormge1}}</h4>
+	</form>
+	<hr>
+	<h2>根据用户标识查找该用户某一时间范围订单详情</h2>
+	<h4 style="color:red " >默认时间为过去一小时</h4>
+	<form action="/result_usertoken" method='POST'>
+		{% csrf_token %}
+		请输入用户标识<input type="text" name="ausertoken" >
+		请输入开始时间<input type="text" name="start_time" placeholder="XXXX/XX/XX XX:XX:XX" value="{{ startTime }}" >
+		请输入结束时间<input type="text" name="end_time"placeholder="XXXX/XX/XX XX:XX:XX" value="{{ endTime }}" >
+		<button>查询</button>
+		<h4 style="color: red">{{errormge2}}</h4>
+	</form>
+	<hr>
+	<h2>根据订单号查询订单详细情况</h2>
+	<form action="/result_orderno" method='POST'>
+		{% csrf_token %}
+		请输入订单号<input type="text" name="orderno" >
+		<button>查询</button>
+		<h4 style="color: red">{{errormge3}}</h4>
+	</form>
+	<hr>
+	<h2>查询某段时间联金是否分发成功</h2>
+	<h4 style="color:red " >默认时间为过去一小时</h4>
+	<form action="/is_filled" method='POST'>
+		{% csrf_token %}
+
+		请输入开始时间<input type="text" name="start_time" placeholder="XXXX/XX/XX XX:XX:XX" value="{{ startTime }}">
+		请输入结束时间<input type="text" name="end_time"placeholder="XXXX/XX/XX XX:XX:XX" value="{{ endTime }}">
+		<button>查询</button>
+		<h4 style="color: red">{{errormge4}}</h4>
+	</form>
+</body>
+</html>
