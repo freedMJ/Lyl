@@ -1,0 +1,2 @@
+# Lyl
+用python的django框架，独立设计编写的一个简易的postgresql数据库查询系统，采用django自带的认证系统，可以根据选择的条件不同从postgresql数据库中获得不同的数据，并在页面上分页显示出来。
