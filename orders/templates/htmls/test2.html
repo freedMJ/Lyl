@@ -1,6 +1,6 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-{% load static %}
 {% load filters %}
 <head>
 
@@ -14,7 +14,8 @@
 	</div>
 	<span><img src="{% static 'images/1528175965.png' %}" style="height: 73px;width: 255px;" id="im"></span><br>
 	<a href="/index">返回首页</a>
-	<p style="color: red">当前共{{uolength}}条记录，一页显示25条记录，当前是第{{user_page.number}}页</p>
+	<p style="color: red">当前共{{olength}}条记录，一页共25条记录，当前是第{{page.number}}页</p>
+	</div>
 	<table border='1'>
 
 		<thead >
@@ -28,7 +29,7 @@
 			</tr>
 		</thead>
 		<tbody>	
-			{% for o in user_page.object_list %}
+			{% for o in page.object_list %}
 			<tr>
 				<td>{{o.id}}</td>
 				<td>{{o.usertoken}}</td>
@@ -45,19 +46,31 @@
 
 		</tbody>
 	</table>
-	{% if user_page.has_previous %}
-		<a href="/result_usertoken{{page.previous_page_number}}">&lt;上一页</a>
+	{% if page.has_previous %}
+		<a href="/result_time{{page.previous_page_number}}">&lt;上一页</a>
 	{% endif %}
-	{% for pindex in user_page.paginator.page_range %}
+	{% for pindex in page.paginator.page_range %}
 	{% if pindex == page.number %}
 	{{pindex}}
 	{% else %}
-	<a href="/result_usertoken{{pindex}}">{{ pindex }}</a>
+	<a href="/result_time{{pindex}}">{{ pindex }}</a>
 	{% endif %}
 	{% endfor %}
-	{% if user_page.has_next %}
-		<a href="/result_usertoken{{page.next_page_number}}">下一页&gt;</a>
+	{% if page.has_next %}
+		<a href="/result_time{{page.next_page_number}}">下一页&gt;</a>
 	{% endif %}
 	
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+

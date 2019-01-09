@@ -1,11 +1,19 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
-	
+	<title>联金数据库查询系统</title>
 </head>
 <body>
-	<h1>数据库查询系统</h1>
+	<div >
+		<div style="display: inline; bottom: 30px;" >
+		<h1 style="display: inline; " >联金数据库查询系统 </h1>
+	</div>
+	<span><img src="{% static 'images/1528175965.png' %}" style="height: 73px;width: 255px;" id="im"></span>
+	
+	</div>
+	
+	<div>
 	<hr>
 	<h2>根据时间查询订单</h2>
 	<h4 style="color:red " >默认时间为过去一小时</h4>
@@ -14,7 +22,7 @@
 
 		请输入开始时间<input type="text" name="start_time" placeholder="XXXX/XX/XX XX:XX:XX" value="{{ startTime }}">
 		请输入结束时间<input type="text" name="end_time"placeholder="XXXX/XX/XX XX:XX:XX" value="{{ endTime }}">
-		<button>查询</button>
+		<button id="bt" >查询</button>
 		<h4 style="color: red">{{errormge1}}</h4>
 	</form>
 	<hr>
@@ -47,5 +55,6 @@
 		<button>查询</button>
 		<h4 style="color: red">{{errormge4}}</h4>
 	</form>
+	</div>
 </body>
 </html>
