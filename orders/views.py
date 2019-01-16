@@ -13,6 +13,7 @@ from utils.mini import LoginRequiredMini
 import math
 from django.views.generic import ListView
 from django.views import generic
+from utils import constants,get_page
 # Create your views here.
 
 #首页
@@ -64,17 +65,30 @@ class ResultView(LoginRequiredMini,View):
 		olist=Orders.objects.filter(Q(created_at__gt=s_timeStamp)&Q(created_at__lt=e_timeStamp))
 		olength=len(olist)
 		#分页
-		paginator=Paginator(olist,25)
+		"""
+		paginator=Paginator(olist,constants.HTML_PAGE_NUMS)
 		if pindex=="":
 			pindex=1
 		else:
 			pindex=int(pindex)
 		#第i页实例对象
 		page=paginator.page(pindex)
-		len_pindex=math.ceil(float(olength/25))
+		len_pindex=math.ceil(float(olength/constants.HTML_PAGE_NUMS))
 
 		#return render(request,'htmls/result_list.html',{'page':page,'olength':olength})
-		return render(request,'htmls/result_list.html',{'page':page,'olength':olength,'len_pindex':len_pindex})
+		return render(request,'htmls/result_list.html',{'page':page,'olength':olength,'len_pindex':len_pindex})"""
+		paginator=Paginator(olist,constants.HTML_PAGE_NUMS) #每页5条
+		if pindex=="":
+			pindex=1
+		else:
+			pindex=int(pindex)
+		page=paginator.page(pindex)
+
+		total_page_number=paginator.num_pages
+		len_pindex=math.ceil(float(olength/constants.HTML_PAGE_NUMS))
+		page_list=get_page.get_pages(int(total_page_number),int(pindex))
+
+		return render(request,'htmls/result_list.html',{'page':page,'page_list':page_list,'olength':olength,'len_pindex':len_pindex})
 	def post(self,request,pindex):
 		start_time=request.POST['start_time']
 		end_time=request.POST['end_time']
@@ -91,16 +105,29 @@ class ResultView(LoginRequiredMini,View):
 		olist=Orders.objects.filter(Q(created_at__gt=s_timeStamp)&Q(created_at__lt=e_timeStamp))
 		olength=len(olist)
 		#分页
-		paginator=Paginator(olist,25)
+		"""
+		paginator=Paginator(olist,constants.HTML_PAGE_NUMS)
 		if pindex=="":
 			pindex=1
 		else:
 			pindex=int(pindex)
 		#第i页实例对象
 		page=paginator.page(pindex)
-		len_pindex=math.ceil(float(olength/25))
+		len_pindex=math.ceil(float(olength/constants.HTML_PAGE_NUMS))
 		#return render(request,'htmls/result_list.html',{'page':page,'olength':olength})
-		return render(request,'htmls/result_list.html',{'page':page,'olength':olength,'len_pindex':len_pindex})
+		return render(request,'htmls/result_list.html',{'page':page,'olength':olength,'len_pindex':len_pindex})"""
+		paginator=Paginator(olist,constants.HTML_PAGE_NUMS) #每页5条
+		if pindex=="":
+			pindex=1
+		else:
+			pindex=int(pindex)
+		page=paginator.page(pindex)
+
+		total_page_number=paginator.num_pages
+		len_pindex=math.ceil(float(olength/constants.HTML_PAGE_NUMS))
+		page_list=get_page.get_pages(int(total_page_number),int(pindex))
+
+		return render(request,'htmls/result_list.html',{'page':page,'page_list':page_list,'olength':olength,'len_pindex':len_pindex})
 
 #根据用户标识查询某一范围时间的订单详情	
 class Result_usertokenView(LoginRequiredMini,View):
@@ -113,14 +140,14 @@ class Result_usertokenView(LoginRequiredMini,View):
 		if olength==0:
 			return HttpResponseRedirect('index/?message=errorNoUser')
 		#分页
-		paginator=Paginator(olists,25)
+		paginator=Paginator(olists,constants.HTML_PAGE_NUMS)
 		if pindex=="":
 			pindex=1
 		else:
 			pindex=int(pindex)
 		#第i页实例对象
 		page=paginator.page(pindex)
-		len_pindex=math.ceil(float(olength/25))
+		len_pindex=math.ceil(float(olength/constants.HTML_PAGE_NUMS))
 		return render(request,'htmls/result_list.html',{'page':page,'olength':olength,'len_pindex':len_pindex})
 		#return render(request,'htmls/result_usertoken.html',{'user_page':user_page,'uolength':uolength})
 	def post(self,request,pindex):
@@ -145,14 +172,14 @@ class Result_usertokenView(LoginRequiredMini,View):
 		if olength==0:
 			return HttpResponseRedirect('index/?message=errorNoUser')
 		#分页
-		paginator=Paginator(olists,25)
+		paginator=Paginator(olists,constants.HTML_PAGE_NUMS)
 		if pindex=="":
 			pindex=1
 		else:
 			pindex=int(pindex)
 		#第i页实例对象
 		page=paginator.page(pindex)
-		len_pindex=math.ceil(float(olength/25))
+		len_pindex=math.ceil(float(olength/constants.HTML_PAGE_NUMS))
 		return render(request,'htmls/result_list.html',{'page':page,'olength':olength,'len_pindex':len_pindex})
 
 
@@ -186,7 +213,7 @@ class Is_filledView(LoginRequiredMini,View):
 			return HttpResponseRedirect('index')
 		else:
 		#分页
-			paginator=Paginator(olist,25)
+			paginator=Paginator(olist,constants.HTML_PAGE_NUMS)
 			if pindex=="":
 				pindex=1
 			else:
@@ -215,9 +242,9 @@ class LoginView(View):
 				response=redirect(next_url)
 				return response
 			else:
-				return HttpResponse("该用户不存在")
+				return render(request,'htmls/login.html',{'errmsg':'该用户不存在'})
 		else:
-			return HttpResponse('该用户不存在')
+			return render(request,'htmls/login.html',{'errmsg':'用户名或密码错误'})
 
 class TestViews(LoginRequiredMini,View):
 	def post(self,request,pindex):
@@ -234,7 +261,7 @@ class TestViews(LoginRequiredMini,View):
 			return HttpResponseRedirect('index')
 		else:
 		#分页
-			paginator=Paginator(olist,25)
+			paginator=Paginator(olist,constants.HTML_PAGE_NUMS)
 			if pindex=="":
 				pindex=1
 			else:
