@@ -17,9 +17,10 @@
     <script type="text/javascript" src="{% static 'js/djangoajax.js' %}"></script>
     <script type="text/javascript">
     	$(document).ready(function(){
-    		 
+    		 $.ajaxSetup({
+                   data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+              });
     		//获得当前时间戳
-    		var token = $('input[name=csrfmiddlewaretoken]').val();
     		var end_timestamp =Date.parse(new Date())
     		//装换成当前时间
     		var end_time=timestampToTime(end_timestamp)
@@ -29,34 +30,6 @@
     		var start_time=timestampToTime(start_timestamp);
     		$("#startTime").val(start_time);
     		$("#endTime").val(end_time);
-
-    		//页面加载自动查询过去一小时的全部订单
-    		$.ajax({
-    			url:"/result_ajax",
-    			type:"post",
-    			data: {csrfmiddlewaretoken: token,
-						"start_timestamp":start_timestamp/1000,
-						"end_timestamp":end_timestamp/1000
-
-						},
-				success:function(data){
-					
-					console.log(data.olists[0])
-					
-				}
-
-
-    		})
-
-
-
-
-
-
-
-
-
-
 
     		$("#bt").click(function(){
     			//获得开始时间戳和结束时间戳
@@ -79,9 +52,8 @@
 				if(orderMethod=="0"){
 					alert("查询方式必选，请选择一种")
 				}
-				
 				//查询时间范围内的订单
-				if(orderMethod=="1"){
+				else if(orderMethod=="1"){
 					//alert("查询时间范围内订单")
 					if(start_time_z==null){
     				 	alert("请输入正确的开始时间,开始时间必填")
@@ -92,51 +64,20 @@
 					//输入的时间格式正确，转化成时间戳
  					var start_timestamp=timeToTimestamp(start_time);
  					var end_timestamp=timeToTimestamp(end_time);
- 					var dict=new Array();
- 					dict[0]="start_timestamp";
- 					dict[1]=start_timestamp;
- 					dict[2]="end_timestamp";
- 					dict[3]=end_timestamp;
- 					if((usertoken.length)>0){
- 						var tmp_str="usertoken";
- 						dict.push(tmp_str)
- 						dict.push(usertoken)
- 					};
- 					if((orderno.length)>0){
- 						var tmp_str="orderno";
- 						dict.push(tmp_str)
- 						dict.push(orderno)
- 					}
- 					//获得json数据
- 					json_data=arrayToJSON(dict)
- 					alert(json_data)
- 					//$.post("/result_ajax",function(){
- 					//	alert("success")
- 					//})
- 					$.ajax({
-						url: '/result_ajax',
-						type: 'post',
-						data: {csrfmiddlewaretoken: token,
-							"json_data":json_data
-
-						},
-						dataType: 'json',
-						success: function () {
-                			alert("aaa")
-            			}
-        })
-
-
  					//调用ajax
- 					//$.ajax({
- 					//	url:"/result_ajax/",
- 					//	type:"get",
+ 					$.ajax({
+ 						url:"/result_ajax",
+ 						type:"post",
  						//headers:{"X-CSRFToken":$.cookie('csrftoken')},
- 						//data:JSON.stringify(json_data),
- 						//data:json_data,
- 						//contentType: "application/json; charset=UTF-8",
- 						//dataType:"json",
- 					//})
+ 						data:{
+ 							"start_timestamp":start_timestamp,
+ 							"end_timestamp":end_timestamp
+
+
+ 						},
+ 						contentType: "application/json",
+ 						dataType:"json",
+ 					})
  					
 
 				}
@@ -219,11 +160,12 @@
      				var temp_str=",";
      				var str_key=data[j-1];
      				var str_vlaue=data[j];
-     				temp_str="'"+str_key+"':"+"'"+str_vlaue+"'"+","
+     				temp_str="'"+str_key+"':"+str_vlaue+","
      				json_str+=temp_str
      			}
 			}
-			new_json="{"+json_str.replace(/'/g,'"')+"}"
+			 cs="'csrfmiddlewaretoken': '{{ csrf_token }}'"
+			new_json="{"+(json_str+cs).replace(/'/g,'"')+"}"
 			//json_data=JSON.stringify(new_json)
 			return new_json
 			//return json_data
@@ -239,7 +181,7 @@
 	</div>
 	<span><img src="{% static 'images/1528175965.png' %}" style="height: 73px;width: 255px;" id="im"></span><br>
 	<form class="form-inline">
-		{% csrf_token %}
+		{% csrf_token%}
 		查询方式<select class="form-control" id="orderMethod">
 			<option value="0">--请选择查询方式(必选)--</option>
 			<option value="1">查询时间范围内订单</option>
@@ -276,78 +218,7 @@
         </select>
 		<button type="button" class="btn btn-default" id="bt">查询</button>
     </form>
-	<a href="/index">返回首页</a>
-	{% if olength == 0 %}
-		<p>当前联金都已经正常发放了</p>
-	{% else  %}
-		<p style="color: red">当前共{{olength}}笔交易未分发成功联金</p>
-		<p style="color: red">当前共{{len_pindex}}页，一页共25条记录，当前是第{{page.number}}页</p>
-	{% endif %}
 	
-
-	</div>
-    <table class="table table-condensed">
-  		
-  		<thead >
-			<tr>
-				<th>交易记录</th>
-				<th>id</th>
-				<th>用户标识</th>
-				<th>订单号</th>
-				<th>交易服务费</th>
-				<th>交易时间</th>
-				<th>是否分发</th>
-			</tr>
-		</thead>
-		<tbody>	
-			{% for o in page.object_list %}
-			<tr>
-				<td>{{forloop.counter}}</td>
-				<td>{{o.id}}</td>
-				<td>{{o.usertoken}}</td>
-				<td>{{o.orderno}}</td>
-				<td>{{o.orderamount}}</td>
-				<td>{{ o.created_at|get_times}}</td>
-				<!--<td>{{ o.created_at}}</td>-->
-				{% if o.is_filled == 0 %}
-					<td style="color: red">未分发</td>
-				{% else %}
-					<td style="color: green">已分发</td>
-				{% endif %}
-				<td>{{o.source_id}}</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-		<nav aria-label="Page navigation">
-					<ul class="pagination">
-
-					  {% if  page.previous_page_number > 0 %}
-					  <li>
-					    <a href="/result_time{{page.previous_page_number}}" aria-label="Previous">
-					      <span aria-hidden="true">«</span>
-					    </a>
-					  </li>
-					  {% endif %}
-
-					  {% for page_num in page_list %}
-					          {% if page_num == page.number %}
-					              <li class="active"><a href="#" ">{{ page_num }}</a></li>
-					          {% else %}
-					              <li><a href="/result_time{{ page_num }}">{{ page_num }}</a></li>
-					          {% endif %}
-					  {% endfor %}
-
-					  {% if page.has_next %}
-					  <li>
-					    <a href="/result_time{{page.next_page_number}}" aria-label="Next">
-					      <span aria-hidden="true">»</span>
-					    </a>
-					  </li>
-					  {% endif %}
-
-					</ul>
-        </nav>
-			   </table>
 
 			    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
 			    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>

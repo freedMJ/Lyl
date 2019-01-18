@@ -14,6 +14,11 @@ import math
 from django.views.generic import ListView
 from django.views import generic
 from utils import constants,get_page
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
+
+
 # Create your views here.
 
 #首页
@@ -247,32 +252,10 @@ class LoginView(View):
 			return render(request,'htmls/login.html',{'errmsg':'用户名或密码错误'})
 
 class TestViews(LoginRequiredMini,View):
-	def post(self,request,pindex):
-		start_time=request.POST['start_time']
-		end_time=request.POST['end_time']
-		try:
-			s_timeStamp=get_unix(start_time)
-			e_timeStamp=get_unix(end_time)
-		except Exception as e :
-			return HttpResponseRedirect('index/?message=errorTime2')
-		try:
-			olist=Orders.objects.filter(Q(created_at__gt=s_timeStamp)&Q(created_at__lt=e_timeStamp)&Q(is_filled=0))
-		except Exception as e:
-			return HttpResponseRedirect('index')
-		else:
-		#分页
-			paginator=Paginator(olist,constants.HTML_PAGE_NUMS)
-			if pindex=="":
-				pindex=1
-			else:
-				pindex=int(pindex)
-			#第i页实例对象
-			page=paginator.page(pindex)
+	
+	def get(self,request):
+		return render(request,'htmls/newresult.html')
 
-			olength=len(olist)
-
-			print(olength)
-			return render(request,'htmls/result_isfilled.html',{'page':page,'olength':olength})
 
 def get_unix(times):
 	timeArray=time.strptime(times,'%Y/%m/%d %H:%M:%S')
@@ -283,3 +266,50 @@ def get_unix(times):
 def get_time(times):
 	dt=time.strftime('%Y/%m/%d %H:%M:%S',times)
 	return dt
+
+class ResultAjax(LoginRequiredMini,View):
+
+	def post(self,request):
+		#response_data = {}
+		start_time_stamp=int(request.POST.get("start_timestamp"))
+		end_time_stamp=int(request.POST.get("end_timestamp"))
+		#olists=Orders.objects.all(usertoken="oucE10RYAXCoktOVoIJCa2nn70GQ")
+		
+		order_data=[]
+		json_data={}
+		try:
+			print()
+			#olists=Orders.objects.filter(Q(created_at__gt=start_time_stamp)&Q(created_at__lt=end_time_stamp))
+			olists=Orders.objects.filter(usertoken="oucE10RYAXCoktOVoIJCa2nn70GQ")
+			olength=len(olists)
+		except Exception as e:
+			print(e)
+		if olists:
+			
+			for o in olists:
+				order_dict={}
+				order_dict["usertoken"]=o.usertoken
+				order_dict["orderno"]=o.orderno
+				order_dict["orderamount"]=o.orderamount
+				order_dict["created_at"]=o.created_at
+				order_dict["is_filled"]=o.is_filled
+				order_dict["service_type"]=o.service_type
+				order_dict["source_id"]=o.source_id
+				order_data.append(order_dict)
+			
+					
+		print(order_data)
+		#order_data=str(json_data).replace("'",'"')
+		#print(order_data)
+		#order_json=json.dumps(order_data)
+
+		#print(olists)
+		
+		#
+		
+		return JsonResponse({"olists":order_data})
+	#start_time_stamp=request.POST.get("start_timestamp")
+	#print(start_time_stamp)
+	#dict=json.loads(request.POST)
+	#dict=json.loads(request.body.decode())
+	#print(dict)
