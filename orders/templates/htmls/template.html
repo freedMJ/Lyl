@@ -5,6 +5,17 @@
     <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/djangoajax.js' %}"></script>
 <div>
+	{% if flage%}
+		<div style="display: inline; bottom: 30px;" >
+			<h1 style="display: inline; " >联金数据库查询系统 </h1>
+			</div>
+		<span><img src="{% static 'images/1528175965.png' %}" style="height: 73px;width: 255px;" id="im"></span>
+	{% endif %}
+
+
+
+</div>
+<div>
 	<a href="/index">返回首页</a>
 		<p style="color: red">当前共{{olength}}笔交易未分发成功联金</p>
 		<p style="color: red">当前共{{len_pindex}}页，一页共25条记录，当前是第{{page.number}}页</p>
@@ -68,7 +79,6 @@
 					              <li><a href="/result_time{{ page_num }}">{{ page_num }}</a></li>
 					          {% endif %}
 					  {% endfor %}
-
 					  {% if page.has_next %}
 					  <li>
 					    <a href="/result_time{{page.next_page_number}}" aria-label="Next">
@@ -76,7 +86,6 @@
 					    </a>
 					  </li>
 					  {% endif %}
-
 					</ul>
         </nav>
 			   

@@ -180,10 +180,7 @@ $(document).ready(function(){
 								"orderMethod":orderMethod,
 								"start_timestamp":start_timestamp,
 								"end_timestamp":end_timestamp,
-								"usertoken":usertoken,
-								"orderType":orderType,
-								"orderno":orderno,
-								"isfilled":isfilled
+								"orderno":orderno
 
 						},
 						success: function (data) {
