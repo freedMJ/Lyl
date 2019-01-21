@@ -81,11 +81,11 @@ DATABASES = {
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'lyl_orders',#数据库名称
-        'USER':'freedmj',#拥有者，这个一般没修改
-        'PASSWORD':'13279131790',#密码，自己设定的
-        'HOST':'47.75.115.19',#默认的就没写
-        'PORT':'5432',
+        'NAME': '',#数据库名称
+        'USER':'',#拥有者，这个一般没修改
+        'PASSWORD':'',#密码，自己设定的
+        'HOST':'',#默认的就没写
+        'PORT':'',
 }
 }
 
@@ -114,3 +114,19 @@ STATICFILES_DIRS=[
 ]
 STATIC_ROOT="/home/lmj/var/www/Lyl/static"
 LOGIN_URL='/orders/login'
+
+# redis配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            #"CONNECTION_POOL_KWARGS": {"max_connections": 100}
+            # "PASSWORD": "密码",
+        }
+    }
+}
+REDIS_TIMEOUT=7*24*60*60
+CUBES_REDIS_TIMEOUT=60*60
+NEVER_REDIS_TIMEOUT=365*24*60*60
