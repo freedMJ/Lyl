@@ -91,10 +91,13 @@ $(document).ready(function(){
     				if(isfilled=="4"){
     					alert("请选择分发联金状态")
     				};
+    				if(orderno!=0){
+    					alert("请不要输入订单号")
+    				}
 					//输入的时间格式正确，转化成时间戳
  					var start_timestamp=timeToTimestamp(start_time);
  					var end_timestamp=timeToTimestamp(end_time);
- 					if(start_timestamp!=null&&end_timestamp!=null&&orderType!=0&&isfilled!=4){
+ 					if(start_timestamp!=null&&end_timestamp!=null&&orderType!=0&&isfilled!=4&&orderno==0){
 
 
  					$.ajax({
@@ -140,9 +143,12 @@ $(document).ready(function(){
     				if(usertoken==0){
     					alert('用户标识必填')
     				}
+    				if(orderno!=0){
+    					alert('请不要输入订单号')
+    				}
     				var start_timestamp=timeToTimestamp(start_time);
  					var end_timestamp=timeToTimestamp(end_time); 
-    				if(start_timestamp!=null&&end_timestamp!=null&&isfilled!=4&&orderType!=4&&usertoken!=0){
+    				if(start_timestamp!=null&&end_timestamp!=null&&isfilled!=4&&orderType!=4&&usertoken!=0&&orderno==0){
     					$.ajax({
 						url: '/result_time',
 						type: 'get',
@@ -178,8 +184,6 @@ $(document).ready(function(){
 						type: 'get',
 						data: {
 								"orderMethod":orderMethod,
-								"start_timestamp":start_timestamp,
-								"end_timestamp":end_timestamp,
 								"orderno":orderno
 
 						},

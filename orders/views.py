@@ -40,19 +40,19 @@ class ResultView(LoginRequiredMini,View):
 				return HttpResponse("数据查询失败")
 
 		else:
-			
 			orderMethod=request.GET.get('orderMethod')
-			print("1%s"%orderMethod)
-			start_time_stamp=int(request.GET.get("start_timestamp"))
-			end_time_stamp=int(request.GET.get("end_timestamp"))
-			if not all([start_time_stamp,end_time_stamp]):
-				return HttpResponse("开始时间与结束时间必填")
+			start_time_stamp=request.GET.get("start_timestamp")
+			end_time_stamp=request.GET.get("end_timestamp")
 			usertoken=request.GET.get("usertoken")#	用户标识 选填
 			orderno=request.GET.get("orderno")#订单号 选填
 			orderType=request.GET.get("orderType")#订单种类 必填
 			isfilled=request.GET.get("isfilled")#是否已分发 必填
-			if usertoken and orderno=="0":
+			if orderno=="0" and orderType!='3':
 				try:
+					if not all([start_time_stamp,end_time_stamp]):
+						return HttpResponse("开始时间与结束时间必填")
+					start_timestamp=int(start_time_stamp)
+					end_time_stamp=int(end_time_stamp)
 					olist=Orders.objects.filter(created_at__gt=start_time_stamp,created_at__lt=end_time_stamp)
 					if usertoken!='0':
 						olist=olist.filter(usertoken='%s'%usertoken)
@@ -66,6 +66,8 @@ class ResultView(LoginRequiredMini,View):
 						olist=olist.filter(is_filled=0)
 					if isfilled=='1':
 						olist=olist.filter(is_filled=1)
+						print(olist)
+					print("xxxxxxxxxxx")
 				except Exception as e:
 					return HttpResponse("数据查询错误")
 			if orderno!="0":
@@ -73,9 +75,24 @@ class ResultView(LoginRequiredMini,View):
 					olist=Orders.objects.filter(orderno='%s'%orderno)
 				except Exception as e:
 					return HttpResponse("数据查询错误")
+			"""
+			if orderno!='0':
+				print("aaa")
+				try:
+					olist=Orders.objects.get(orderno='%s'%orderno)
+					print(olist)
+				except Exception as e:
+					return HttpResponse("数据查询错误")
+
+			"""
+			print("55555555555")
+			print(type(orderMethod))
+			print(orderno)
+			print(olist)
 			try:
 				#将得到的结果存进redis数据库中
 				cache.set(key_str,olist,60*60)
+				print("ffffff")
 			except Exception as e:
 				return HttpResponse("数据保存失败")
 		#分页
