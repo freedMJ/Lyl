@@ -42,10 +42,6 @@ $(document).ready(function(){
     		$("#bt").click(function(){
     			$("#find").text("查询中。。。。")
     			$('#find').css('color','red')
-    			//$.cookie("result_key",null);
-    			//设置cookie为0
-    			var now_timestamp =Date.parse(new Date())
-    			setcookie('result_key',now_timestamp)
     			//获得开始时间戳和结束时间戳
     			var start_time=$("#startTime").val();
     			var end_time=$("#endTime").val();
@@ -73,7 +69,7 @@ $(document).ready(function(){
 				if(orderMethod=="0"){
 					alert("查询方式必选，请选择一种")
 				}
-				
+
 				//查询时间范围内的订单
 				if(orderMethod=="1"){
 					//开始时间，结束时间，订单种类，是否分发必填
@@ -98,7 +94,11 @@ $(document).ready(function(){
  					var start_timestamp=timeToTimestamp(start_time);
  					var end_timestamp=timeToTimestamp(end_time);
  					if(start_timestamp!=null&&end_timestamp!=null&&orderType!=0&&isfilled!=4&&orderno==0){
-
+                    //$.cookie("result_key",null);
+                    //设置cookie为0
+                    var result_cookie = start_timestamp.toString()+end_timestamp.toString()+orderMethod+usertoken+orderno.toString()
+                    alert(result_cookie)
+                    setcookie('result_key',result_cookie);
 
  					$.ajax({
 						url: '/result_time',
@@ -149,6 +149,9 @@ $(document).ready(function(){
     				var start_timestamp=timeToTimestamp(start_time);
  					var end_timestamp=timeToTimestamp(end_time); 
     				if(start_timestamp!=null&&end_timestamp!=null&&isfilled!=4&&orderType!=4&&usertoken!=0&&orderno==0){
+                        var result_cookie = start_timestamp.toString()+end_timestamp.toString()+orderMethod+usertoken+orderno.toString()
+                        alert(result_cookie)
+                        setcookie('result_key',result_cookie);
     					$.ajax({
 						url: '/result_time',
 						type: 'get',
@@ -179,6 +182,9 @@ $(document).ready(function(){
 						alert("订单号必填")
 					}
 					if(orderno!=0){
+                        var result_cookie = orderno
+                        alert(result_cookie)
+                        setcookie('result_key',result_cookie);
 						$.ajax({
 						url: '/result_time',
 						type: 'get',

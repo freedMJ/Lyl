@@ -29,6 +29,7 @@ class ResultView(LoginRequiredMini,View):
 	def get(self,request,pindex):
 		#从redis数据库中
 		key_str=request.COOKIES.get('result_key')
+		print(key_str)
 		if not key_str:
 			key_str='nokey'
 		flage=cache.has_key(key_str)		
@@ -47,7 +48,7 @@ class ResultView(LoginRequiredMini,View):
 			orderType=request.GET.get("orderType")#订单种类 必填
 			isfilled=request.GET.get("isfilled")#是否已分发 必填
 
-			if orderno=="0" and orderType!='3':
+			if orderMethod!='3':
 				try:
 					if not all([start_time_stamp,end_time_stamp]):
 						return HttpResponse("开始时间与结束时间必填")
@@ -69,7 +70,7 @@ class ResultView(LoginRequiredMini,View):
 				except Exception as e:
 					return HttpResponse("数据查询错误")
 
-			if orderno!="0":
+			else:
 				try:
 					olist=Orders.objects.filter(orderno='%s'%orderno)
 				except Exception as e:
@@ -78,7 +79,6 @@ class ResultView(LoginRequiredMini,View):
 			try:
 				#将得到的结果存进redis数据库中
 				cache.set(key_str,olist,60*60)
-				print("ffffff")
 			except Exception as e:
 				return HttpResponse("数据保存失败")
 		#分页
